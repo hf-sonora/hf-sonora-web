@@ -22,14 +22,16 @@ const d = evento?.data;
       <h2 id="next-venue" class="card__venue">
         <a href={url(`eventos/${evento!.id}`)}>{d.venue_name}</a>
       </h2>
-      <p class="card__addr muted">{d.address}</p>
+      {d.address && <p class="card__addr muted">{d.address}</p>}
       <div class="btn-row">
         <a class="btn btn--primary" href={d.rsvp_url} data-track="rsvp">
           Aparta tu lugar <span aria-hidden="true">→</span>
         </a>
-        <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
-          Cómo llegar
-        </a>
+        {d.maps_url && (
+          <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
+            Cómo llegar
+          </a>
+        )}
       </div>
     </>
   ) : (

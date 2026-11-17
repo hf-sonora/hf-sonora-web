@@ -28,7 +28,7 @@ const jsonLd = {
     name: d.venue_name,
     address: {
       "@type": "PostalAddress",
-      streetAddress: d.address,
+      ...(d.address && { streetAddress: d.address }),
       addressLocality: "Hermosillo",
       addressRegion: "Sonora",
       addressCountry: "MX",
@@ -75,10 +75,12 @@ const jsonLd = {
         <aside class="where" aria-label="Dónde">
           <p class="label">Dónde</p>
           <p class="where__name">{d.venue_name}</p>
-          <p>{d.address}</p>
-          <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
-            Abrir en Maps
-          </a>
+          {d.address && <p>{d.address}</p>}
+          {d.maps_url && (
+            <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
+              Abrir en Maps
+            </a>
+          )}
         </aside>
       </div>
       {d.cover && (

@@ -17,8 +17,8 @@ const eventos = defineCollection({
       .optional(),
     category: z.enum(["Build", "Learn", "Hang", "Hardware", "Found", "Raise", "Conference"]),
     venue_name: z.string(),
-    address: z.string(),
-    maps_url: z.string().url(),
+    address: z.string().optional(), // omit while the venue is TBD
+    maps_url: z.string().url().optional(), // omit while the venue is TBD
     rsvp_url: z.string().url(),
     cover: z.string().optional(),
     cover_alt: z.string().optional(),
