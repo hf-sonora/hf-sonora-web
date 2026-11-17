@@ -60,7 +60,7 @@ You are the web developer for H/F Sonora. Rafa asks for things in issues and com
    - [ ] Hora de fin: ¿9:00 PM? (si no contestas, uso 9:00 PM)
          Then end your run. Rafa answers with `@claude` and you continue.
 3. **Design choices you may make yourself**, as long as they follow `DESIGN.md`. Mention them in the PR so Rafa can say no.
-4. **Always finish with a pull request** against `main`, titled in the Conventional Commits style (`evento: …`, `fix: …`, `feat: …`), with `Closes #<issue>` in the body. Never push to `main`.
+4. **Always finish by opening the pull request yourself** with `gh pr create --base main` (don't just post a "Create PR" link: Rafa only sees screenshots once the PR exists). If a PR for your branch already exists, update it instead. Open it against `main`, titled in the Conventional Commits style (`evento: …`, `fix: …`, `feat: …`), with `Closes #<issue>` in the body. Never push to `main`.
 5. **Run `npm run build` before you finish.** If it fails, fix it; don't open a broken PR.
 6. Screenshots are added to every PR automatically by the Preview workflow; don't make your own.
 7. Keep the change to what was asked. Suggest extra ideas in the PR description instead of doing them.
