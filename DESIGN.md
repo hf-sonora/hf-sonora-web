@@ -65,7 +65,7 @@ The official hf.cx wordmark image (`public/img/hf-logo.webp`, white letters with
 
 ### Event card (`src/components/EventCard.astro`)
 
-Panel `--ink-2`, 1 px `--line` border, 4 px orange left border, 6 px radius. Orange mono label (`PRÓXIMO MEETUP`), date in orange mono + time in white, venue name as big uppercase H2, address muted, primary "Apártate tu lugar →" (Luma) and ghost "Cómo llegar" (Google Maps). Empty state: "Muy pronto" plus an Instagram button.
+Panel `--ink-2`, 1 px `--line` border, 4 px orange left border, 6 px radius. Orange mono label (`PRÓXIMO MEETUP`), date in orange mono + time in white, venue name as big uppercase H2, address muted, primary "Aparta tu lugar →" (Luma) and ghost "Cómo llegar" (Google Maps). Empty state: "Muy pronto" plus an Instagram button.
 
 ### Section heading
 
