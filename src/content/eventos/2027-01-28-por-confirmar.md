@@ -12,7 +12,7 @@ cover_alt: "Portada del meetup: H/F Sonora, jueves 28 de enero"
 
 Nuestro meetup mensual, relajado y sin conferencias: gente platicando sobre lo que está construyendo, con una cheve en la mano.
 
-¿Estás construyendo algo? Tráelo: a media noche hay **pitches de 3 minutos**, una pregunta cada uno, y de vuelta a la plática.
+¿Estás construyendo algo? Tráelo: a mitad de la noche hay **pitches de 3 minutos**, una pregunta cada uno, y de vuelta a la plática.
 
 Las reuniones de H/F son una buena forma de conocer gente fuera de tu círculo de siempre.
 
