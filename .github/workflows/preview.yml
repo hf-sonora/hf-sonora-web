@@ -1,0 +1,91 @@
+# Visual preview for every pull request.
+# Builds the proposed version of the site, takes phone + desktop screenshots, and posts them
+# as a comment on the pull request so it can be approved by looking at pictures.
+# Screenshots are stored on the `capturas` branch (never merged, never deployed).
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write # push screenshots to the `capturas` branch
+  pull-requests: write # post the comment
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    # Only for branches in this repo (forks don't get write access).
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      PR: ${{ github.event.pull_request.number }}
+      SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+
+      - name: Take screenshots
+        id: shots
+        run: |
+          # Also capture any meetup page this pull request adds or changes.
+          extra=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- src/content/eventos \
+            | sed -n 's#^src/content/eventos/\(.*\)\.md$#/eventos/\1#p' | tr '\n' ' ')
+          npx astro preview --port 4321 > /dev/null 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:4321 > /dev/null && break; sleep 1; done
+          node scripts/screenshots.mjs "shots/pr-$PR/${SHA:0:7}" $extra > shots.json
+          cat shots.json
+
+      - name: Store screenshots on the capturas branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mv shots /tmp/shots
+          if git ls-remote --exit-code origin capturas >/dev/null; then
+            git fetch origin capturas && git switch capturas
+          else
+            git switch --orphan capturas && git rm -rf --quiet . || true
+          fi
+          mkdir -p "pr-$PR" && cp -r /tmp/shots/pr-$PR/* "pr-$PR/"
+          git add "pr-$PR" && git commit -m "capturas: PR #$PR ${SHA:0:7}" && git push origin capturas
+
+      - name: Comment on the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          raw="https://raw.githubusercontent.com/${{ github.repository }}/capturas/pr-$PR/${SHA:0:7}"
+          node -e '
+            const r = JSON.parse(require("fs").readFileSync("shots.json","utf8"));
+            const raw = process.argv[1];
+            const byPage = {};
+            for (const s of r) (byPage[s.path] ??= {})[s.size] = s;
+            let md = "<!-- capturas -->\n## Así se ve este cambio\n\n";
+            md += "Revisa las imágenes. Si te gusta, aprueba el PR. Si no, comenta qué cambiar (puedes escribir @claude para que el agente lo arregle).\n\n";
+            for (const [p, s] of Object.entries(byPage)) {
+              const warn = [s.movil, s.escritorio].some(x => x && (x.overflow || x.status !== 200))
+                ? " ⚠️ revisar (error o se sale de la pantalla)" : "";
+              md += `### \`${p}\`${warn}\n\n| Móvil | Escritorio |\n|---|---|\n`;
+              md += `| <img src="${raw}/${s.movil.file}" width="260"> | <img src="${raw}/${s.escritorio.file}" width="520"> |\n\n`;
+            }
+            md += `<sub>Versión ${process.env.SHA.slice(0,7)}</sub>\n`;
+            require("fs").writeFileSync("comment.md", md);
+          ' "$raw"
+          # Update our earlier comment instead of piling up new ones.
+          id=$(gh api repos/${{ github.repository }}/issues/$PR/comments \
+            --jq '[.[] | select(.body | startswith("<!-- capturas -->"))][0].id // empty')
+          if [ -n "$id" ]; then
+            gh api -X PATCH repos/${{ github.repository }}/issues/comments/$id -F body=@comment.md > /dev/null
+          else
+            gh pr comment $PR --body-file comment.md
+          fi

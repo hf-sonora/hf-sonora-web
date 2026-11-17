@@ -10,3 +10,6 @@ dist/
 *attendee*
 *asistente*
 *rsvp*.csv
+shots/
+shots.json
+comment.md

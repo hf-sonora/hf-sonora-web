@@ -48,3 +48,15 @@ Nothing reaches the live site without passing the check **and** your approval. T
 **Phase 4: the agent asks you.** The agent posts questions as comments with checkboxes ("¿Hora de fin: 9 PM o hasta que cierre?") and waits for your answer before continuing. A GitHub Project board shows every task as a card: To do → Agent working → Waiting for Rafa → Done. That board is your visual dashboard; it works on the phone.
 
 Phase 2–4 are all GitHub features plus the Claude GitHub integration, so there's nothing extra to host or pay for at first.
+
+## How to use the agent (day to day)
+
+1. Go to the repo → **Issues** → **New issue** → pick **Nuevo evento** or **Cambio al sitio**. Fill it in, drag in images, and write `@claude` anywhere in the text. (You can do this from the GitHub phone app.)
+2. Within a minute the agent replies on the issue. If something is missing, it asks you with checkboxes (`❓ Necesito tu respuesta`). Answer in a comment that starts with `@claude`.
+3. When it's done, it opens a **pull request**. A few minutes later a comment appears with **screenshots on phone and desktop**.
+4. Look at the pictures:
+   - Good → **Merge pull request**. The live site updates in ~2 minutes.
+   - Not quite → comment `@claude` + what to change ("el botón más grande", "cambia la hora a 7 PM"). It updates the same PR and new screenshots appear.
+5. Only people you've added to the repo can call the agent. It can never publish on its own.
+
+**Cost:** the agent runs on Rafa's Claude plan (the token in the repo secret `CLAUDE_CODE_OAUTH_TOKEN`), so it uses that plan's limits, not extra money. GitHub Actions minutes are free for public repos.
