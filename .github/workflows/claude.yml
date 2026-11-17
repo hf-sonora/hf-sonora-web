@@ -3,6 +3,8 @@
 # review, and it does the work:
 # it reads AGENTS.md + DESIGN.md, makes the change on a branch and opens a pull request.
 # Only people with write access to this repo can trigger it (enforced by the action).
+# It also refuses to work on any thread that has text from someone without write access
+# (step "Solo texto de confianza"), so a stranger can't slip hidden instructions to it.
 # It can never merge: main is protected, a human approves every pull request.
 name: Agente
 
@@ -46,6 +48,36 @@ jobs:
           cache: npm
       - run: npm ci
 
+      # Safety: the agent reads the whole thread (issue or PR, title, body, every comment and
+      # review). If any of it was written by someone without write access to this repo, stop
+      # before the agent starts, so hidden instructions from strangers never reach it.
+      - name: Solo texto de confianza
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUM: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: |
+          pick='{login: .user.login, assoc: .author_association}'
+          people=$(
+            gh api "repos/$REPO/issues/$NUM" --jq "$pick"
+            gh api --paginate "repos/$REPO/issues/$NUM/comments" --jq ".[] | $pick"
+            if gh api "repos/$REPO/pulls/$NUM" > /dev/null 2>&1; then
+              gh api --paginate "repos/$REPO/pulls/$NUM/comments" --jq ".[] | $pick"
+              gh api --paginate "repos/$REPO/pulls/$NUM/reviews" --jq ".[] | $pick"
+            fi
+          )
+          strangers=$(echo "$people" | jq -rs '
+            [ .[]
+              | select((.assoc | IN("OWNER", "MEMBER", "COLLABORATOR")) | not)
+              | select((.login | IN("claude[bot]", "github-actions[bot]")) | not)
+              | .login ] | unique | join(", ")')
+          if [ -n "$strangers" ]; then
+            echo "Untrusted authors in this thread: $strangers"
+            msg="🔒 Sonorus no trabaja en este hilo porque tiene texto de personas sin acceso al repositorio (\`$strangers\`). Por seguridad, abre un issue nuevo escrito por ti con lo que necesitas."
+            gh issue comment "$NUM" -R "$REPO" --body "$(printf '%s\n\n— Sonorus 🤖' "$msg")"
+            exit 1
+          fi
+
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -54,4 +86,4 @@ jobs:
           claude_args: >-
             --model claude-sonnet-5-5
             --max-turns 30
-            --allowedTools "Edit,Read,Write,Glob,Grep,Bash(npm run build),Bash(npm run lint),Bash(npm run format),Bash(npx prettier:*),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(ls:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(gh pr edit:*),Bash(gh issue edit:*)"
+            --allowedTools "Edit,Read,Write,Glob,Grep,Bash(npm run build),Bash(npm run lint),Bash(npm run format),Bash(npx prettier:*),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(ls:*),Bash(gh pr create:*),Bash(gh pr list --head:*),Bash(gh pr edit:*),Bash(gh issue edit:*)"
