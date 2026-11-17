@@ -5,6 +5,8 @@ start: "18:00"
 end: "21:00"
 category: Hang
 venue_name: Lugar por confirmar
+# Oculto hasta que el Luma sea público (ver issue). Cambia a false para mostrarlo.
+draft: true
 rsvp_url: "https://luma.com/ty6bgk99"
 cover: /img/events/2027-01-28-por-confirmar.png
 cover_alt: "Portada del meetup: H/F Sonora, jueves 28 de enero"
