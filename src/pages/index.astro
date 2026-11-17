@@ -1,0 +1,190 @@
+---
+import Base from "../layouts/Base.astro";
+import EventCard from "../components/EventCard.astro";
+import { getEventos, url } from "../lib/events";
+import { CONTACT } from "../lib/site";
+
+const { next, past } = await getEventos();
+
+const steps = [
+  ["Llegas cuando quieras.", "Si no conoces a nadie, nosotros te presentamos."],
+  ["Cheve y plática", "sobre lo que cada quien está construyendo."],
+  [
+    "Pitches de 3 minutos.",
+    "¿Estás construyendo algo? Tráelo. Una pregunta por pitch y de vuelta a la plática.",
+  ],
+  ["Seguimos", "hasta que cierre el lugar."],
+];
+---
+
+<Base>
+  <section class="hero">
+    <div class="hero__slash" aria-hidden="true"></div>
+    <div class="wrap hero__inner">
+      <p class="label hero__kicker">¡Estamos de vuelta!</p>
+      <h1>Startups, cheve y buena plática.</h1>
+      <p class="hero__lede muted">
+        Cada mes juntamos a founders, devs y estudiantes de Hermosillo en un bar. Sin conferencias,
+        sin corbatas.
+      </p>
+      <EventCard evento={next} />
+    </div>
+  </section>
+
+  <section class="section section--light" aria-labelledby="como">
+    <div class="wrap">
+      <span class="eyebrow-slash" aria-hidden="true"></span>
+      <h2 id="como">¿Cómo funciona?</h2>
+      <ol class="steps">
+        {steps.map(([b, rest], i) => (
+          <li>
+            <span class="label steps__n">0{i + 1}</span>
+            <p>
+              <strong>{b}</strong> {rest}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {past.some((e) => e.data.photos.length) && (
+    <section class="section" aria-labelledby="fotos">
+      <div class="wrap">
+        <span class="eyebrow-slash" aria-hidden="true" />
+        <h2 id="fotos">Así se pone</h2>
+        <a class="btn btn--ghost" href={url("eventos")}>
+          Ver todos los meetups
+        </a>
+      </div>
+    </section>
+  )}
+
+  <section class="section" aria-labelledby="que">
+    <div class="wrap">
+      <span class="eyebrow-slash" aria-hidden="true"></span>
+      <h2 id="que">¿Qué es H/F?</h2>
+      <p class="big">
+        Hackers/Founders empezó en 2008 con cinco personas en un bar de Sunnyvale, California. Hoy
+        hay meetups en cinco continentes. La idea sigue siendo la misma: una bebida y la gente en el
+        cuarto. Aquí todos somos iguales: no hay VIPs.
+      </p>
+      <p class="muted">
+        Nuestras tres reglas: no seas patán, dinos qué necesita tu comunidad, y haz lo correcto por
+        tu comunidad.
+      </p>
+      <a class="btn btn--ghost" href="https://hf.cx/">
+        Conoce H/F en el mundo
+      </a>
+    </div>
+  </section>
+
+  <section id="contacto" class="section section--light" aria-labelledby="lugares">
+    <div class="wrap">
+      <span class="eyebrow-slash" aria-hidden="true"></span>
+      <h2 id="lugares">¿Tienes un lugar o una cervecería?</h2>
+      <p>
+        Cada mes cambiamos de lugar. ¿Tienes un bar, una cervecería o un espacio que le quede? ¿Tu
+        empresa quiere invitar una ronda? Escríbenos.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn--primary" href={CONTACT.instagram}>
+          Escríbenos por Instagram
+        </a>
+        {CONTACT.email && (
+          <a class="btn btn--ghost" href={`mailto:${CONTACT.email}`}>
+            Correo
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: var(--s-3) 0 var(--s-8);
+  }
+  .hero__slash {
+    position: absolute;
+    right: 28px;
+    top: 18px;
+    width: 22px;
+    height: 54px;
+    background: var(--orange);
+    transform: skewX(-28deg);
+    opacity: 0.95;
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .hero__kicker {
+    display: inline-block;
+    justify-self: start;
+    background: var(--orange);
+    color: var(--paper);
+    padding: 0.35rem 0.75rem;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  .hero h1 {
+    max-width: 12ch;
+  }
+  .hero__lede {
+    font-size: 1rem;
+    margin-bottom: var(--s-1);
+  }
+  @media (min-width: 900px) {
+    .hero {
+      padding: var(--s-12) 0;
+    }
+    .hero__inner {
+      gap: var(--s-2);
+    }
+    .hero__lede {
+      font-size: 1.125rem;
+    }
+    .hero__slash {
+      right: 6%;
+      top: -80px;
+      width: 180px;
+      height: 760px;
+    }
+  }
+  .steps {
+    list-style: none;
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--s-4) var(--s-6);
+    }
+  }
+  .steps li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    align-items: baseline;
+    border-top: 2px solid var(--ink);
+    padding-top: var(--s-2);
+  }
+  .steps__n {
+    color: var(--orange);
+    font-size: 1rem;
+  }
+  .steps p {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+  .big {
+    font-size: clamp(1.125rem, 2.4vw, 1.375rem);
+    margin-top: var(--s-3);
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+import Base from "../layouts/Base.astro";
+import { url } from "../lib/events";
+---
+
+<Base title="No encontrada">
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow-slash" aria-hidden="true"></span>
+      <h1>Esta página se fue por otra cheve.</h1>
+      <p class="muted" style="margin-top:1rem">
+        No existe o la movimos.
+      </p>
+      <a class="btn btn--primary" href={url("")}>
+        Volver al inicio
+      </a>
+    </div>
+  </section>
+</Base>

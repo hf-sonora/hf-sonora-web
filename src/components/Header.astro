@@ -1,0 +1,69 @@
+---
+import Logo from "./Logo.astro";
+import { url } from "../lib/events";
+const path = Astro.url.pathname;
+const links = [
+  { href: url("eventos"), label: "Eventos" },
+  { href: url("#contacto"), label: "Contacto" },
+];
+---
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a href={url("")} class="header__home" aria-label="H/F Sonora, inicio">
+      <Logo />
+    </a>
+    <nav aria-label="Principal">
+      <ul>
+        {links.map((l) => (
+          <li>
+            <a href={l.href} aria-current={path.startsWith(l.href) ? "page" : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 60px;
+    gap: var(--s-2);
+  }
+  .header__home {
+    display: inline-flex;
+    text-decoration: none;
+    padding: 0.5rem 0;
+  }
+  ul {
+    display: flex;
+    gap: var(--s-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    font-weight: 500;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    padding: 0.75rem 0;
+    display: inline-block;
+  }
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--orange);
+  }
+</style>

@@ -1,0 +1,15 @@
+name: Cambio al sitio
+description: Algo que arreglar, mejorar o agregar
+labels: ["cambio"]
+body:
+  - type: textarea
+    id: que
+    attributes:
+      {
+        label: ¿Qué quieres que cambie?,
+        description: "Si puedes, pega una captura y marca qué cambiar.",
+      }
+    validations: { required: true }
+  - type: textarea
+    id: por-que
+    attributes: { label: ¿Por qué? }

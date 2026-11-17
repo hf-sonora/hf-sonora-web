@@ -1,0 +1,28 @@
+{
+  "name": "hf-sonora-web",
+  "private": true,
+  "type": "module",
+  "description": "Sitio web de Hackers/Founders Sonora (Hermosillo)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "format": "prettier --write .",
+    "lint": "prettier --check ."
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.5",
+    "@fontsource-variable/roboto": "5.3.0",
+    "@fontsource/roboto-mono": "5.3.0",
+    "astro": "7.4.12"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "prettier": "3.10.1",
+    "prettier-plugin-astro": "1.1.2",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
+}

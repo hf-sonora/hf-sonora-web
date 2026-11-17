@@ -1,0 +1,27 @@
+# Checks every pull request: formatting, types, and a full build.
+# A pull request can't be merged until this is green.
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: No attendee data
+        run: |
+          if git ls-files | grep -iE '(attendee|asistente|rsvp|guest).*\.(csv|xlsx|json)$'; then
+            echo "Attendee lists must never be committed."; exit 1
+          fi

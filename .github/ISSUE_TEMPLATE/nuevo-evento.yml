@@ -1,0 +1,40 @@
+name: Nuevo evento
+description: Agregar un meetup al sitio
+title: "evento: AAAA-MM-DD lugar"
+labels: ["evento"]
+body:
+  - type: input
+    id: fecha
+    attributes: { label: Fecha (AAAA-MM-DD), placeholder: "2027-01-28" }
+    validations: { required: true }
+  - type: input
+    id: hora
+    attributes: { label: Hora de inicio y fin (hora de Hermosillo), placeholder: "18:00 a 21:00" }
+    validations: { required: true }
+  - type: input
+    id: lugar
+    attributes: { label: Lugar, placeholder: "Buqui Bichi" }
+    validations: { required: true }
+  - type: input
+    id: direccion
+    attributes: { label: Dirección }
+    validations: { required: true }
+  - type: input
+    id: maps
+    attributes: { label: Link de Google Maps }
+    validations: { required: true }
+  - type: input
+    id: luma
+    attributes: { label: Link de Luma }
+    validations: { required: true }
+  - type: dropdown
+    id: categoria
+    attributes:
+      label: Categoría
+      options: [Hang, Build, Learn, Hardware, Found, Raise, Conference]
+  - type: textarea
+    id: texto
+    attributes: { label: Texto del evento (puede ser el de Luma) }
+  - type: textarea
+    id: portada
+    attributes: { label: Portada (arrastra la imagen aquí, 1080 × 1080) }

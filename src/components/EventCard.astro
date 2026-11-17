@@ -1,0 +1,90 @@
+---
+import type { Evento } from "../lib/events";
+import { url } from "../lib/events";
+import { clock, longDate, startsAt } from "../lib/time";
+
+interface Props {
+  evento?: Evento;
+  label?: string;
+}
+const { evento, label = "Próximo meetup" } = Astro.props;
+const d = evento?.data;
+---
+
+<article class="card" aria-labelledby="next-venue">
+  <p class="label card__label">{label}</p>
+  {d ? (
+    <>
+      <p class="label card__when">
+        <span class="accent">{longDate(startsAt(d))}</span>
+        <span> · {clock(d.date, d.start)}</span>
+      </p>
+      <h2 id="next-venue" class="card__venue">
+        <a href={url(`eventos/${evento!.id}`)}>{d.venue_name}</a>
+      </h2>
+      <p class="card__addr muted">{d.address}</p>
+      <div class="btn-row">
+        <a class="btn btn--primary" href={d.rsvp_url} data-track="rsvp">
+          Apártate tu lugar <span aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
+          Cómo llegar
+        </a>
+      </div>
+    </>
+  ) : (
+    <>
+      <h2 id="next-venue" class="card__venue">
+        Muy pronto
+      </h2>
+      <p class="muted">Estamos cerrando fecha y lugar. Síguenos para enterarte primero.</p>
+      <a class="btn btn--primary" href="https://www.instagram.com/hfsonora/">
+        Síguenos en Instagram
+      </a>
+    </>
+  )}
+</article>
+
+<style>
+  .card {
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--orange);
+    border-radius: var(--radius-card);
+    padding: 1.25rem;
+    display: grid;
+    gap: var(--s-1);
+    max-width: 560px;
+  }
+  .card__label {
+    color: var(--orange);
+    margin: 0;
+  }
+  .card__when {
+    margin: 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+  }
+  @media (min-width: 768px) {
+    .card {
+      padding: var(--s-3);
+    }
+    .card__when {
+      font-size: 0.9375rem;
+    }
+  }
+  .card__venue {
+    font-size: clamp(2.25rem, 8vw, 3.5rem);
+    text-transform: uppercase;
+  }
+  .card__venue a {
+    text-decoration: none;
+  }
+  .card__venue a:hover {
+    color: var(--orange);
+  }
+  .card__addr {
+    font-size: 0.9375rem;
+    margin-bottom: var(--s-1);
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+import Base from "../../layouts/Base.astro";
+import EventCard from "../../components/EventCard.astro";
+import { getEventos, url } from "../../lib/events";
+import { shortDate, startsAt } from "../../lib/time";
+
+const { upcoming, past } = await getEventos();
+---
+
+<Base
+  title="Eventos"
+  description="Todos los meetups de Hackers/Founders Sonora, próximos y anteriores."
+>
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow-slash" aria-hidden="true"></span>
+      <h1>Eventos</h1>
+
+      <h2 class="label sub">Próximos</h2>
+      <div class="list">
+        {upcoming.length ? (
+          upcoming.map((e) => <EventCard evento={e} label={e.data.category} />)
+        ) : (
+          <EventCard />
+        )}
+      </div>
+
+      {past.length > 0 && (
+        <>
+          <h2 class="label sub">Anteriores</h2>
+          <ul class="grid">
+            {past.map((e) => (
+              <li>
+                <a href={url(`eventos/${e.id}`)}>
+                  {e.data.cover && (
+                    <img
+                      src={url(e.data.cover)}
+                      alt={e.data.cover_alt ?? ""}
+                      loading="lazy"
+                      width="600"
+                      height="600"
+                    />
+                  )}
+                  <span class="label">
+                    {shortDate(startsAt(e.data))} · {e.data.venue_name}
+                  </span>
+                  {e.data.attendance && <span class="muted">~{e.data.attendance} personas</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sub {
+    color: var(--orange);
+    margin: var(--s-6) 0 var(--s-2);
+    font-size: 0.875rem;
+  }
+  .list {
+    display: grid;
+    gap: var(--s-3);
+  }
+  .grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-2);
+  }
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .grid a {
+    display: grid;
+    gap: var(--s-1);
+    text-decoration: none;
+  }
+  .grid img {
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+  }
+</style>

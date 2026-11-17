@@ -1,0 +1,54 @@
+---
+import { SOCIAL } from "../lib/site";
+---
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <p class="label footer__tag">#HFSONORA · Hermosillo, Sonora</p>
+    <ul class="footer__links">
+      {SOCIAL.map((s) => (
+        <li>
+          <a href={s.href} rel="noopener">
+            {s.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="footer__note muted">
+      Parte de <a href="https://hf.cx/">Hackers/Founders</a>, desde 2008. Nunca compartimos tu
+      información con nadie, tampoco con patrocinadores.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 6px solid var(--orange);
+    padding: var(--s-6) 0 var(--s-8);
+  }
+  .footer__inner {
+    display: grid;
+    gap: var(--s-3);
+  }
+  .footer__tag {
+    color: var(--orange);
+    margin: 0;
+  }
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .footer__links a {
+    display: inline-block;
+    padding: 0.5rem 0;
+    font-weight: 500;
+  }
+  .footer__note {
+    font-size: 0.875rem;
+    margin: 0;
+  }
+</style>

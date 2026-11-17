@@ -1,0 +1,64 @@
+---
+// The official H/F wordmark from hf.cx (white letters, orange slash) plus "SONORA".
+// Only use it on black or on a dark photo overlay.
+import { url } from "../lib/events";
+interface Props {
+  size?: "sm" | "lg";
+}
+const { size = "sm" } = Astro.props;
+---
+
+<span class:list={["logo", `logo--${size}`]}>
+  <img
+    class="logo__full"
+    src={url("img/hf-logo.webp")}
+    alt="Hackers/Founders"
+    width="904"
+    height="58"
+  />
+  <img class="logo__mark" src={url("img/hf-mark.webp")} alt="H/F" width="165" height="80" />
+  <span class="logo__city">SONORA</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .logo img {
+    width: auto;
+  }
+  .logo__full {
+    display: none;
+  }
+  .logo__mark {
+    height: 26px;
+  }
+  @media (min-width: 768px) {
+    .logo__full {
+      display: block;
+    }
+    .logo__mark {
+      display: none;
+    }
+  }
+  .logo__city {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+  }
+  .logo--lg .logo__full {
+    height: 22px;
+  }
+  .logo--lg .logo__city {
+    font-size: 1.125rem;
+  }
+  @media (min-width: 768px) {
+    .logo__full {
+      height: 18px;
+    }
+  }
+</style>

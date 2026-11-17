@@ -1,0 +1,167 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { url, type Evento } from "../../lib/events";
+import { clock, isoAt, longDate, startsAt } from "../../lib/time";
+
+export async function getStaticPaths() {
+  const eventos = await getCollection("eventos");
+  return eventos.map((e) => ({ params: { slug: e.id }, props: { evento: e } }));
+}
+
+const { evento } = Astro.props as { evento: Evento };
+const d = evento.data;
+const { Content } = await render(evento);
+const isPast = new Date(isoAt(d.date, d.end ?? "23:59")) < new Date();
+
+// schema.org Event, so Google can show the meetup in search results.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: d.title,
+  startDate: isoAt(d.date, d.start),
+  ...(d.end && { endDate: isoAt(d.date, d.end) }),
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: d.venue_name,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: d.address,
+      addressLocality: "Hermosillo",
+      addressRegion: "Sonora",
+      addressCountry: "MX",
+    },
+  },
+  ...(d.cover && { image: [new URL(url(d.cover), Astro.site).href] }),
+  organizer: { "@type": "Organization", name: "Hackers/Founders Sonora", url: Astro.site?.href },
+  offers: {
+    "@type": "Offer",
+    url: d.rsvp_url,
+    price: "0",
+    priceCurrency: "MXN",
+    availability: "https://schema.org/InStock",
+  },
+  isAccessibleForFree: true,
+};
+---
+
+<Base
+  title={`${d.venue_name}, ${longDate(startsAt(d)).toLowerCase()}`}
+  description={`${d.title}. Hermosillo.`}
+  image={d.cover ? url(d.cover) : undefined}
+  jsonLd={jsonLd}
+>
+  <article class="section">
+    <div class="wrap layout">
+      <div>
+        <p class="label when">
+          <span class="accent">{longDate(startsAt(d))}</span> · {clock(d.date, d.start)}
+          {d.end && ` – ${clock(d.date, d.end)}`}
+        </p>
+        <h1>{d.title.replace("Hackers/Founders Sonora", "H/F Sonora")}</h1>
+        {!isPast && (
+          <div class="btn-row cta">
+            <a class="btn btn--primary" href={d.rsvp_url} data-track="rsvp">
+              Apártate tu lugar <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        )}
+        <div class="body">
+          <Content />
+        </div>
+
+        <aside class="where" aria-label="Dónde">
+          <p class="label">Dónde</p>
+          <p class="where__name">{d.venue_name}</p>
+          <p>{d.address}</p>
+          <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
+            Abrir en Maps
+          </a>
+        </aside>
+      </div>
+      {d.cover && (
+        <img class="cover" src={url(d.cover)} alt={d.cover_alt ?? ""} width="1080" height="1080" />
+      )}
+    </div>
+
+    {d.photos.length > 0 && (
+      <div class="wrap">
+        <h2 class="photos-title">Así se puso</h2>
+        <ul class="photos">
+          {d.photos.map((p) => (
+            <li>
+              <img src={url(p.src)} alt={p.alt} loading="lazy" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </article>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--s-4);
+  }
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: 1.2fr 1fr;
+      align-items: start;
+    }
+  }
+  .when {
+    margin-bottom: var(--s-2);
+  }
+  .cta {
+    margin: var(--s-3) 0;
+  }
+  .body {
+    margin-top: var(--s-3);
+  }
+  .where {
+    margin-top: var(--s-4);
+    background: var(--orange);
+    color: var(--ink);
+    padding: var(--s-3);
+    border-radius: var(--radius-card);
+  }
+  .where .label {
+    margin: 0;
+  }
+  .where__name {
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .where .btn--ghost:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .cover {
+    border-radius: var(--radius-card);
+    width: 100%;
+  }
+  .photos-title {
+    margin: var(--s-8) 0 var(--s-3);
+  }
+  .photos {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-2);
+  }
+  @media (min-width: 768px) {
+    .photos {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .photos img {
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+</style>
