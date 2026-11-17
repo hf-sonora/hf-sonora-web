@@ -71,7 +71,7 @@ jobs:
             const byPage = {};
             for (const s of r) (byPage[s.path] ??= {})[s.size] = s;
             let md = "<!-- capturas -->\n## Así se ve este cambio\n\n";
-            md += "Revisa las imágenes. Si te gusta, aprueba el PR. Si no, comenta qué cambiar (empieza tu comentario con "Sonorus," para que el agente lo arregle).\n\n";
+            md += "Revisa las imágenes. Si te gusta, aprueba el PR. Si no, comenta qué cambiar (empieza tu comentario con “Sonorus,” para que el agente lo arregle).\n\n";
             for (const [p, s] of Object.entries(byPage)) {
               const warn = [s.movil, s.escritorio].some(x => x && (x.overflow || x.status !== 200))
                 ? " ⚠️ revisar (error o se sale de la pantalla)" : "";
