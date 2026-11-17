@@ -1,5 +1,6 @@
 # The website agent.
-# Write "@claude" in an issue, a pull request comment or a review, and the agent does the work:
+# The agent is called Sonorus. Write "Sonorus" (no @) in an issue, a pull request comment or a
+# review, and it does the work:
 # it reads AGENTS.md + DESIGN.md, makes the change on a branch and opens a pull request.
 # Only people with write access to this repo can trigger it (enforced by the action).
 # It can never merge: main is protected, a human approves every pull request.
@@ -22,10 +23,11 @@ concurrency:
 jobs:
   claude:
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      github.actor != 'claude[bot]' && (
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'sonorus')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, 'sonorus')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, 'sonorus')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, 'sonorus') || contains(github.event.issue.title, 'sonorus'))))
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -47,6 +49,8 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Not "@sonorus": that's someone else's GitHub account. Matching ignores capitals.
+          trigger_phrase: Sonorus
           claude_args: >-
             --model claude-sonnet-5-5
             --max-turns 30
