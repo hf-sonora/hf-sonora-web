@@ -1,0 +1,17 @@
+# Hostinger (Apache). Copied to dist/ by the build.
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Always https, and the bare domain (www.hackersfounders.mx -> hackersfounders.mx).
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://hackersfounders.mx%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# HTML is always revalidated so a deploy shows up right away; hashed assets can cache.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
