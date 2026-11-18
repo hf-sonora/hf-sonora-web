@@ -1,0 +1,37 @@
+---
+// Google Analytics 4 and PostHog, set up the same way as buildsomethingeveryday.com.
+// What is collected is described on /privacidad: change one, change the other (AGENTS.md).
+// Without the build variables (local, CI, pull-request preview) nothing below loads or sends.
+import { ANALYTICS_ON, GA4_ID, INTERNAL_KEY } from "../lib/analytics";
+---
+
+{ANALYTICS_ON && <script is:inline define:vars={{ INTERNAL_KEY }}>
+  // Internal device: ?internal=1 marks this browser as one of ours, ?internal=0 clears it.
+  // This is the only place that writes the flag.
+  window.hfInternal = false;
+  try {
+    var internalParam = new URLSearchParams(location.search).get("internal");
+    if (internalParam === "1") localStorage.setItem(INTERNAL_KEY, "1");
+    if (internalParam === "0") localStorage.removeItem(INTERNAL_KEY);
+    window.hfInternal = localStorage.getItem(INTERNAL_KEY) === "1";
+  } catch (e) {}
+</script>}
+{GA4_ID && (
+  <>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} />
+    <script is:inline define:vars={{ GA4_ID }}>
+      // Google tag (gtag.js). `gtag` is set on window because this script runs inside a function.
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () {
+        window.dataLayer.push(arguments);
+      };
+      window.gtag("js", new Date());
+      if (window.hfInternal) window.gtag("config", GA4_ID, { traffic_type: "internal" });
+      else window.gtag("config", GA4_ID);
+    </script>
+  </>
+)}
+<script>
+  import { startAnalytics } from "../lib/track";
+  startAnalytics();
+</script>

@@ -7,11 +7,12 @@ export const SITE = {
   locale: "es_MX",
 };
 
+// `id` is what analytics reports as `platform`: keep it stable even if the label changes.
 export const SOCIAL = [
-  { label: "Instagram", href: "https://www.instagram.com/hfsonora/" },
-  { label: "Facebook", href: "https://www.facebook.com/hfSonora" },
-  { label: "Luma", href: "https://luma.com/wdvvi8lv" },
-  { label: "hf.cx", href: "https://hf.cx/" },
+  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/hfsonora/" },
+  { id: "facebook", label: "Facebook", href: "https://www.facebook.com/hfSonora" },
+  { id: "luma", label: "Luma", href: "https://luma.com/wdvvi8lv" },
+  { id: "hf.cx", label: "hf.cx", href: "https://hf.cx/" },
 ];
 
 // TODO(rafa): confirm which email and WhatsApp link go on the site (brief, section 11).

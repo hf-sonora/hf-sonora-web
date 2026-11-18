@@ -39,9 +39,11 @@ jobs:
       - name: Take screenshots
         id: shots
         run: |
-          # Also capture any meetup page this pull request adds or changes.
+          # Also capture any meetup page or standalone page this pull request adds or changes.
           extra=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- src/content/eventos \
             | sed -n 's#^src/content/eventos/\(.*\)\.md$#/eventos/\1#p' | tr '\n' ' ')
+          extra="$extra $(git diff --name-only origin/${{ github.base_ref }}...HEAD -- src/pages \
+            | sed -n 's#^src/pages/\([a-z0-9-]*\)\.astro$#/\1#p' | { grep -vx -e /index -e /404 || true; } | tr '\n' ' ')"
           npx astro preview --port 4321 > /dev/null 2>&1 &
           for i in $(seq 1 30); do curl -sf http://localhost:4321 > /dev/null && break; sleep 1; done
           node scripts/screenshots.mjs "shots/pr-$PR/${SHA:0:7}" $extra > shots.json

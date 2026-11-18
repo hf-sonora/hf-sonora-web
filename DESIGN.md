@@ -75,6 +75,14 @@ A short orange skewed slash (14 × 34 px, skew −28°) above a left-aligned H2.
 
 Orange background, black text, venue name uppercase, ghost "Abrir en Maps".
 
+### Text page (`src/pages/privacidad.astro`)
+
+For Privacidad and any future legal or long-text page: black background, the section slash and an H1, a muted mono "Última actualización" label, then plain paragraphs. Section titles are H2s at the H3 size (24 px), so the page reads as a document instead of a poster. No buttons.
+
+### Footer
+
+Orange 6 px top border, mono tag, social links, the muted note and a "Privacidad" link. A muted mono "Dispositivo interno" line shows only on our own flagged browsers (see Analytics in `AGENTS.md`).
+
 ### Photo grid
 
 Square crops, 2 columns mobile / 3 desktop, mono caption `3 DIC 2026 · LA CINCO`. Lazy-loaded, WebP, under ~200 KB each.

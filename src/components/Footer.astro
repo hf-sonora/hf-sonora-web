@@ -1,5 +1,6 @@
 ---
 import { SOCIAL } from "../lib/site";
+import { url } from "../lib/events";
 ---
 
 <footer class="footer">
@@ -8,7 +9,13 @@ import { SOCIAL } from "../lib/site";
     <ul class="footer__links">
       {SOCIAL.map((s) => (
         <li>
-          <a href={s.href} rel="noopener">
+          <a
+            href={s.href}
+            rel="noopener"
+            data-track="social_click"
+            data-track-platform={s.id}
+            data-track-where="footer"
+          >
             {s.label}
           </a>
         </li>
@@ -17,6 +24,15 @@ import { SOCIAL } from "../lib/site";
     <p class="footer__note muted">
       Parte de <a href="https://hf.cx/">Hackers/Founders</a>, desde 2008. Nunca compartimos tu
       información con nadie, ni siquiera con patrocinadores.
+    </p>
+    <p class="footer__note muted">
+      <a class="footer__privacy" href={url("privacidad")}>
+        Privacidad
+      </a>
+    </p>
+    {/* Shown only on a browser flagged with ?internal=1 (see Analytics in AGENTS.md). */}
+    <p class="label footer__internal muted" data-internal-note hidden>
+      Dispositivo interno
     </p>
   </div>
 </footer>
@@ -49,6 +65,13 @@ import { SOCIAL } from "../lib/site";
   }
   .footer__note {
     font-size: 0.875rem;
+    margin: 0;
+  }
+  .footer__privacy {
+    display: inline-block;
+    padding: 0.5rem 0;
+  }
+  .footer__internal {
     margin: 0;
   }
 </style>

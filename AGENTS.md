@@ -23,24 +23,59 @@ npm run format    # Prettier
 
 ## Where things are
 
-| Path                       | What                                                                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `src/content/eventos/*.md` | One file per meetup. The file name is the URL slug (`AAAA-MM-DD-lugar`). Fields are validated by `src/content.config.ts`. |
-| `src/pages/`               | Pages: home, `/eventos`, `/eventos/<slug>`, 404                                                                           |
-| `src/components/`          | Header, Footer, Logo, EventCard                                                                                           |
-| `src/styles/global.css`    | Design tokens and base styles                                                                                             |
-| `src/lib/time.ts`          | Hermosillo time helpers. Use them for every date.                                                                         |
-| `src/lib/site.ts`          | Site name, social links, contact info                                                                                     |
-| `public/img/`              | Images. Events go in `public/img/events/`                                                                                 |
+| Path                                                 | What                                                                                                                      |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `src/content/eventos/*.md`                           | One file per meetup. The file name is the URL slug (`AAAA-MM-DD-lugar`). Fields are validated by `src/content.config.ts`. |
+| `src/pages/`                                         | Pages: home, `/eventos`, `/eventos/<slug>`, 404                                                                           |
+| `src/components/`                                    | Header, Footer, Logo, EventCard                                                                                           |
+| `src/styles/global.css`                              | Design tokens and base styles                                                                                             |
+| `src/lib/time.ts`                                    | Hermosillo time helpers. Use them for every date.                                                                         |
+| `src/lib/site.ts`                                    | Site name, social links, contact info                                                                                     |
+| `src/components/Analytics.astro`, `src/lib/track.ts` | Google Analytics 4, PostHog and the click events. See "Analytics" below                                                   |
+| `src/pages/privacidad.astro`                         | The Privacidad page: what the site collects                                                                               |
+| `public/img/`                                        | Images. Events go in `public/img/events/`                                                                                 |
 
 ## Hard rules
 
 - **Never publish, store or commit an attendee list**, RSVP export, emails or phone numbers of attendees. RSVPs live only in Luma.
 - **Never commit secrets** (API keys, tokens, `.env` files).
 - All dates in **America/Hermosillo** (UTC−7, no daylight saving) via `src/lib/time.ts`.
-- No tracking pixels (Facebook, Google Ads). Analytics, if added, must be cookie-free.
+- No advertising pixels (Facebook, Google Ads). Analytics are Google Analytics 4 and PostHog only, set up as described in "Analytics" below. Both set cookies, and `/privacidad` says so.
+- **Anything that changes what is collected** (a new tool, a new kind of event, recording) **changes `src/pages/privacidad.astro` in the same pull request.**
 - Don't add new dependencies without saying why in the PR.
 - Spanish copy uses informal "tú". Don't rewrite copy Rafa or Eddy wrote unless asked.
+
+## Analytics
+
+Same setup as buildsomethingeveryday.com (Eddy's site). Two tools, both loaded from `src/components/Analytics.astro` in the page `<head>`:
+
+- **Google Analytics 4**: Google's tag (gtag.js). It counts a page view on every page load by itself, so the site sends none of its own.
+- **PostHog**: `posthog-js`, fetched as a separate file once the browser is idle (`src/lib/track.ts`), so it is not part of the first load. Autocapture (clicks), session replay with every input masked, heatmaps and web vitals are on. Replay only records while "Record user sessions" is on in the PostHog project. Put `data-ph-mask` on any element whose text is sensitive.
+
+Settings are **GitHub repository variables** (public values, not secrets), passed only to the build in `.github/workflows/deploy.yml`:
+
+| Variable                       | Value                                                                                                                              |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_GA4_ID`                | The GA4 measurement ID (`G-...`)                                                                                                   |
+| `PUBLIC_POSTHOG_PROJECT_TOKEN` | PostHog's public client token (`phc_...`)                                                                                          |
+| `PUBLIC_POSTHOG_HOST`          | `https://us.i.posthog.com`, or PostHog's managed proxy on our domain (`https://e.hackersfounders.mx`) once PostHog shows it "Live" |
+
+Without them (`npm run dev`, a local `npm run build`, CI, the pull-request preview) nothing loads and nothing is sent, so tests and screenshots never land in the numbers. The Privacidad page reads the same settings and describes what that build really does.
+
+**Click events.** A link or button with `data-track="<event>"` sends that event to both tools, with one param per `data-track-<param>` attribute (`data-track-event-slug` becomes `event_slug`). Params are slugs and fixed ids only, never personal data. A new button that matters gets a row here and its name in `TRACK_EVENTS` (`src/lib/track.ts`); a name that is not in that list is ignored.
+
+| Event           | Params                                                               | Fires on                                                                              |
+| --------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `rsvp_click`    | `event_slug`, `where`: `card` \| `event`                             | "Aparta tu lugar" on the event card and on the event page                             |
+| `maps_click`    | `event_slug`, `where`: `card` \| `event`                             | "Cómo llegar" on the card and "Abrir en Maps" on the event page                       |
+| `social_click`  | `platform` (the `SOCIAL` id), `where`: `footer` \| `card` \| `about` | The footer links, "Síguenos en Instagram" on the empty card, "Conoce H/F en el mundo" |
+| `contact_click` | `channel`: `instagram` \| `email`                                    | The buttons in the "¿Tienes un lugar o una cervecería?" section                       |
+
+Don't name a param `event_id`: the Google tag reserves it and drops it. GA4 shows a param in reports only after it is registered as a custom dimension in the property.
+
+**Our own visits.** Open `https://hackersfounders.mx/?internal=1` once on each of your devices and browsers (`?internal=0` undoes it). That browser is then flagged in `localStorage` (`hf.internal`): Google Analytics gets `traffic_type: internal` and PostHog gets `internal: true` on every event and records no replay, so both tools can filter us out. The footer shows "Dispositivo interno" on a flagged browser. Safari may forget the flag after about a week without a visit.
+
+**Testing.** PostHog drops events from `localhost` and from automated browsers, and Google Analytics does not. When you test a build that has the real settings, set the internal flag first or answer the analytics requests locally. Test traffic must never reach the real numbers.
 
 ## How to add a meetup (the most common task)
 

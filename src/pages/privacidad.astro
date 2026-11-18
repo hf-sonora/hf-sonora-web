@@ -1,0 +1,134 @@
+---
+// What this site collects. Adapted from the privacy text of buildsomethingeveryday.com, which
+// runs the same analytics setup. The analytics paragraphs follow the build's own settings, so
+// the page always describes what this build really does. Anything that changes what is
+// collected changes this page in the same pull request (AGENTS.md).
+import Base from "../layouts/Base.astro";
+import { ANALYTICS_ON, GA4_ID, POSTHOG_HOST, POSTHOG_TOKEN } from "../lib/analytics";
+import { CONTACT } from "../lib/site";
+
+const UPDATED = "17 de noviembre de 2026";
+
+const tools = [GA4_ID && "Google Analytics", POSTHOG_TOKEN && "PostHog"].filter(Boolean);
+const toolNames = tools.join(" y ");
+const storage = [GA4_ID && "_ga", POSTHOG_TOKEN && "ph_*"].filter(Boolean).join(" y ");
+// PostHog's managed proxy lives on a subdomain of this site; without it requests go straight to PostHog.
+const posthogHost = new URL(POSTHOG_HOST).hostname;
+const proxied = Boolean(POSTHOG_TOKEN) && posthogHost.endsWith(".hackersfounders.mx");
+---
+
+<Base
+  title="Privacidad"
+  description="Qué datos recopila el sitio de Hackers/Founders Sonora y para qué."
+>
+  <section class="section">
+    <div class="wrap legal">
+      <span class="eyebrow-slash" aria-hidden="true"></span>
+      <h1>Privacidad</h1>
+      <p class="label muted updated">Última actualización: {UPDATED}</p>
+
+      <h2>Quién opera este sitio</h2>
+      <p>
+        hackersfounders.mx es el sitio de Hackers/Founders Sonora, el meetup de startups de
+        Hermosillo. Lo operan sus organizadores. Contacto: <a href={CONTACT.instagram}>Instagram</a>
+        {CONTACT.email && (
+          <>
+            {" "}
+            o <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          </>
+        )}
+        .
+      </p>
+
+      <h2>Qué datos recopila este sitio</h2>
+      {ANALYTICS_ON ? (
+        <>
+          <p>
+            Estadísticas de visitas con {toolNames}: qué páginas abres, cuándo, desde qué tipo de
+            dispositivo y navegador, qué botones y links presionas, y una ubicación aproximada
+            derivada de tu dirección IP. {tools.length > 1 ? "Los dos ponen" : "Pone"} cookies o
+            almacenamiento del navegador (como {storage}) para distinguir visitas recurrentes.
+            Puedes bloquearlas con la configuración de cookies de tu navegador
+            {GA4_ID && " o con el complemento de exclusión de Google"}.
+          </p>
+          {POSTHOG_TOKEN && (
+            <p>
+              PostHog además graba cómo se usan las páginas (session replay): por dónde se mueve el
+              puntero, qué se desplaza y se presiona, y qué muestra la página, como una repetición
+              que podemos ver para mejorar el sitio. Todo lo que escribas en un campo se enmascara
+              antes de grabarse, y la grabación nunca incluye otras pestañas ni nada fuera de este
+              sitio.
+            </p>
+          )}
+          <p>
+            Usamos todo esto para saber qué ve la gente y dónde se atora. No se usa para publicidad.
+            El sitio no tiene cuentas ni formularios que guarden tus datos.
+          </p>
+        </>
+      ) : (
+        <p>
+          Hoy este sitio no usa herramientas de analítica ni pone cookies. No tiene cuentas ni
+          formularios que guarden tus datos.
+        </p>
+      )}
+
+      {ANALYTICS_ON && (
+        <>
+          <h2>A dónde van las solicitudes de analítica</h2>
+          <p>
+            {POSTHOG_TOKEN &&
+              (proxied
+                ? `Las solicitudes de PostHog salen de tu navegador hacia ${posthogHost}, una dirección del dominio de este sitio que PostHog opera para nosotros en la red de Cloudflare. Cloudflare las pasa a PostHog y maneja en el camino los mismos datos de la solicitud (como tu dirección IP), bajo el acuerdo de PostHog con Cloudflare. `
+                : "Las solicitudes de PostHog van directo a PostHog. ")}
+            {GA4_ID && "Las solicitudes de Google Analytics van directo a Google."}
+          </p>
+        </>
+      )}
+
+      <h2>Tu registro a los meetups</h2>
+      <p>
+        Para apartar tu lugar te mandamos a Luma. Tu registro vive solo en Luma, bajo su propia
+        política de privacidad. Este sitio no recibe, guarda ni publica la lista de asistentes.
+      </p>
+
+      <h2>Hospedaje</h2>
+      <p>
+        El sitio está hospedado en Hostinger, que guarda registros estándar del servidor (como
+        dirección IP y hora de visita) para operar y proteger el servicio.
+      </p>
+
+      <h2>Links a otros servicios</h2>
+      <p>
+        {GA4_ID && "Google Analytics lo provee Google. "}
+        {POSTHOG_TOKEN && "PostHog lo provee PostHog Inc. "}
+        {ANALYTICS_ON &&
+          (tools.length > 1
+            ? "Cada uno tiene su propia política de privacidad. "
+            : "Tiene su propia política de privacidad. ")}
+        Los links y botones a Luma, Instagram, Facebook, Google Maps y hf.cx te llevan a esos
+        servicios, que tienen sus propias políticas de privacidad.
+      </p>
+
+      <h2>Tus derechos</h2>
+      <p>
+        Puedes preguntarnos qué información tenemos sobre ti (en la práctica, los mensajes que nos
+        mandes) y pedirnos que la corrijamos o la borremos. Escríbenos por{" "}
+        <a href={CONTACT.instagram}>Instagram</a>.
+      </p>
+
+      <h2>Cambios</h2>
+      <p>Si el sitio empieza a recopilar algo más, esta página lo dirá primero.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Text page: the H1 keeps the site scale, section titles drop to the H3 size so the page reads as a document. */
+  .legal h2 {
+    font-size: 1.5rem;
+    margin: var(--s-6) 0 var(--s-2);
+  }
+  .updated {
+    margin: var(--s-2) 0 0;
+  }
+</style>
