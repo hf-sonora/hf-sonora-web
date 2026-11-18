@@ -4,7 +4,7 @@ This file is read by Claude Code, Codex, Cursor and other coding agents. Humans:
 
 ## What this is
 
-The website of Hackers/Founders Sonora, the monthly startup bar night in Hermosillo. Static site built with [Astro](https://astro.build), deployed to GitHub Pages by GitHub Actions. Spanish (es-MX).
+The website of Hackers/Founders Sonora, the monthly startup bar night in Hermosillo. Static site built with [Astro](https://astro.build), deployed to Hostinger (https://hackersfounders.mx) by GitHub Actions. Spanish (es-MX).
 
 ## Before you change anything
 

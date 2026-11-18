@@ -2,7 +2,7 @@
 
 El sitio de **Hackers/Founders Sonora**, el meetup mensual de startups en Hermosillo. Parte de [Hackers/Founders](https://hf.cx/).
 
-- **Stack:** [Astro](https://astro.build) (sitio estático) + GitHub Pages
+- **Stack:** [Astro](https://astro.build) (sitio estático) + Hostinger (hackersfounders.mx)
 - **Diseño:** [`DESIGN.md`](DESIGN.md)
 - **Reglas para agentes de IA:** [`AGENTS.md`](AGENTS.md)
 - **Cómo contribuir:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
