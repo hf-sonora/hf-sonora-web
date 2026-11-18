@@ -73,7 +73,13 @@ const steps = [
         Nuestras tres reglas: no seas patán, dinos qué necesita tu comunidad y haz lo correcto por
         tu comunidad.
       </p>
-      <a class="btn btn--ghost" href="https://hf.cx/">
+      <a
+        class="btn btn--ghost"
+        href="https://hf.cx/"
+        data-track="social_click"
+        data-track-platform="hf.cx"
+        data-track-where="about"
+      >
         Conoce H/F en el mundo
       </a>
     </div>
@@ -88,11 +94,21 @@ const steps = [
         empresa quiere invitar una ronda? Escríbenos.
       </p>
       <div class="btn-row">
-        <a class="btn btn--primary" href={CONTACT.instagram}>
+        <a
+          class="btn btn--primary"
+          href={CONTACT.instagram}
+          data-track="contact_click"
+          data-track-channel="instagram"
+        >
           Escríbenos por Instagram
         </a>
         {CONTACT.email && (
-          <a class="btn btn--ghost" href={`mailto:${CONTACT.email}`}>
+          <a
+            class="btn btn--ghost"
+            href={`mailto:${CONTACT.email}`}
+            data-track="contact_click"
+            data-track-channel="email"
+          >
             Correo
           </a>
         )}

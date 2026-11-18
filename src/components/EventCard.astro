@@ -24,11 +24,24 @@ const d = evento?.data;
       </h2>
       {d.address && <p class="card__addr muted">{d.address}</p>}
       <div class="btn-row">
-        <a class="btn btn--primary" href={d.rsvp_url} data-track="rsvp">
+        <a
+          class="btn btn--primary"
+          href={d.rsvp_url}
+          data-track="rsvp_click"
+          data-track-event-slug={evento!.id}
+          data-track-where="card"
+        >
           Aparta tu lugar <span aria-hidden="true">→</span>
         </a>
         {d.maps_url && (
-          <a class="btn btn--ghost" href={d.maps_url} rel="noopener">
+          <a
+            class="btn btn--ghost"
+            href={d.maps_url}
+            rel="noopener"
+            data-track="maps_click"
+            data-track-event-slug={evento!.id}
+            data-track-where="card"
+          >
             Cómo llegar
           </a>
         )}
@@ -40,7 +53,13 @@ const d = evento?.data;
         Muy pronto
       </h2>
       <p class="muted">Estamos cerrando fecha y lugar. Síguenos para enterarte primero.</p>
-      <a class="btn btn--primary" href="https://www.instagram.com/hfsonora/">
+      <a
+        class="btn btn--primary"
+        href="https://www.instagram.com/hfsonora/"
+        data-track="social_click"
+        data-track-platform="instagram"
+        data-track-where="card"
+      >
         Síguenos en Instagram
       </a>
     </>

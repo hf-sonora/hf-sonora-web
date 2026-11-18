@@ -2,6 +2,7 @@
 import "@fontsource-variable/roboto";
 import "@fontsource/roboto-mono/700.css";
 import "../styles/global.css";
+import Analytics from "../components/Analytics.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE } from "../lib/site";
@@ -24,6 +25,7 @@ const ogImage = new URL(image ?? url("img/events/2026-12-03-la-cinco.png"), Astr
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Analytics />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

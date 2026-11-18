@@ -43,6 +43,11 @@ jobs:
         env:
           SITE_URL: https://hackersfounders.mx
           BASE_PATH: /
+          # Analytics (AGENTS.md, Analytics). Repository variables, public values. Only this
+          # production build gets them: CI and the pull-request preview send nothing.
+          PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
+          PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ vars.PUBLIC_POSTHOG_PROJECT_TOKEN }}
+          PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
 
       - name: FTP deploy
         # v4.4.0, pinned by commit.
