@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Countdown from "../components/Countdown.astro";
 import EventCard from "../components/EventCard.astro";
 import { getEventos, url } from "../lib/events";
 import { CONTACT } from "../lib/site";
@@ -22,6 +23,7 @@ const steps = [
     <div class="hero__slash" aria-hidden="true"></div>
     <div class="wrap hero__inner">
       <p class="label hero__kicker">¡Estamos de vuelta!</p>
+      <Countdown evento={next} />
       <h1>Startups, cheve y buena plática.</h1>
       <p class="hero__lede muted">
         Cada mes juntamos a founders, devs y estudiantes de Hermosillo en un bar. Sin conferencias,

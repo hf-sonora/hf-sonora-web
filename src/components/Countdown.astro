@@ -1,0 +1,148 @@
+---
+// Countdown to the next meetup, shown above the fold on the homepage.
+// The start comes from the event's date + start in Hermosillo time (src/lib/time.ts),
+// so every visitor counts down to the same instant whatever their own time zone.
+import type { Evento } from "../lib/events";
+import { endsAt, startsAt } from "../lib/time";
+
+interface Props {
+  evento?: Evento;
+}
+const { evento } = Astro.props;
+const d = evento?.data;
+const start = d ? startsAt(d) : undefined;
+const end = d ? endsAt(d) : undefined;
+
+// Values at build time, so the numbers are there before the script runs.
+const left = start ? Math.max(0, +start - Date.now()) : 0;
+const pad = (n: number) => String(n).padStart(2, "0");
+const units = [
+  ["dias", "Días", Math.floor(left / 86_400_000)],
+  ["horas", "Horas", Math.floor(left / 3_600_000) % 24],
+  ["min", "Min", Math.floor(left / 60_000) % 60],
+  ["seg", "Seg", Math.floor(left / 1000) % 60],
+] as const;
+---
+
+{start && end && (
+  <div
+    class="countdown"
+    data-countdown
+    data-start={start.toISOString()}
+    data-end={end.toISOString()}
+    role="timer"
+    aria-label="Cuenta regresiva para el próximo meetup"
+  >
+    <p class="label countdown__label">Faltan</p>
+    <ol class="countdown__units">
+      {units.map(([key, name, value]) => (
+        <li class="countdown__unit">
+          <span class="countdown__n" data-unit={key}>
+            {pad(value)}
+          </span>
+          <span class="label countdown__name">{name}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="countdown__live" hidden>
+      ¡Ya empezó! Ahí nos vemos.
+    </p>
+  </div>
+)}
+
+<script>
+  const pad = (n: number) => String(n).padStart(2, "0");
+  for (const el of document.querySelectorAll<HTMLElement>("[data-countdown]")) {
+    const start = Date.parse(el.dataset.start!);
+    const end = Date.parse(el.dataset.end!);
+    const cell = (k: string) => el.querySelector<HTMLElement>(`[data-unit="${k}"]`)!;
+    const units = el.querySelector<HTMLElement>(".countdown__units")!;
+    const label = el.querySelector<HTMLElement>(".countdown__label")!;
+    const live = el.querySelector<HTMLElement>(".countdown__live")!;
+    const tick = () => {
+      const now = Date.now();
+      if (now >= end) {
+        el.hidden = true; // the nightly rebuild moves the site to the next meetup
+        return false;
+      }
+      if (now >= start) {
+        units.hidden = label.hidden = true;
+        live.hidden = false;
+        return true;
+      }
+      const left = start - now;
+      cell("dias").textContent = pad(Math.floor(left / 86_400_000));
+      cell("horas").textContent = pad(Math.floor(left / 3_600_000) % 24);
+      cell("min").textContent = pad(Math.floor(left / 60_000) % 60);
+      cell("seg").textContent = pad(Math.floor(left / 1000) % 60);
+      return true;
+    };
+    if (tick()) {
+      const id = setInterval(() => tick() || clearInterval(id), 1000);
+    }
+  }
+</script>
+
+<style>
+  .countdown {
+    display: grid;
+    gap: var(--s-1);
+    margin: var(--s-1) 0;
+  }
+  .countdown__label {
+    margin: 0;
+    color: var(--orange);
+  }
+  .countdown__units {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-1);
+    max-width: 640px;
+  }
+  .countdown__unit {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 0 0.5rem;
+    border-top: 2px solid var(--orange);
+  }
+  .countdown__n {
+    font-weight: 700;
+    font-size: clamp(2.75rem, 13vw, 6.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--paper);
+  }
+  .countdown__name {
+    color: var(--muted);
+  }
+  .countdown__live {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(2rem, 8vw, 3.75rem);
+    line-height: 1.05;
+  }
+  .countdown__live::before {
+    content: "";
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.35em;
+    border-radius: 50%;
+    background: var(--orange);
+    vertical-align: 0.08em;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .countdown__live::before {
+      animation: countdown-pulse 1.6s ease-in-out infinite;
+    }
+  }
+  @keyframes countdown-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+</style>
