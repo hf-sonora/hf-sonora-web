@@ -1,0 +1,55 @@
+# Publishes a branch to https://preview.hackersfounders.mx so a change can be seen on a real
+# URL before it is merged. Push any branch to `preview` (git push -f origin <branch>:preview)
+# or run it from the Actions tab and pick the branch.
+# Same Hostinger FTP account as Deploy, but always into /public_html/preview/ (the subdomain's
+# folder). The preview is not indexed and has no analytics.
+name: Deploy preview
+
+on:
+  push:
+    branches: [preview]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: https://preview.hackersfounders.mx
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+        env:
+          SITE_URL: https://preview.hackersfounders.mx
+          BASE_PATH: /
+
+      - name: Keep the preview out of search engines
+        run: |
+          printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
+          printf 'Header set X-Robots-Tag "noindex, nofollow"\n' > dist/.htaccess
+
+      - name: FTP deploy
+        # v4.4.0, pinned by commit (same as Deploy).
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/preview/
+          local-dir: ./dist/
+          protocol: ftps
+          port: 21
+          dangerous-clean-slate: false
